@@ -30,6 +30,7 @@ export class TasksController {
 
   @ApiOperation({ summary: 'Список задач пользователя' })
   @ApiResponse({ status: 200, type: [Task] })
+  @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Req() request: Request): Promise<Task[]> {
