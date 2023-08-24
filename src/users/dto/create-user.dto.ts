@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
-    example: 'example@mail.com',
+    example: 'admin@admin.kz',
     description: 'email пользователя',
   })
   @IsEmail()
@@ -12,7 +12,7 @@ export class CreateUserDto {
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
 
-  @ApiProperty({ example: 'mypassword', description: 'пароль пользователя' })
+  @ApiProperty({ example: 'admin', description: 'пароль пользователя' })
   @IsNotEmpty()
   @IsString()
   @MinLength(5)

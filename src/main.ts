@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 async function start() {
   const PORT = process.env.PORT || 3000;
@@ -13,10 +14,10 @@ async function start() {
     }),
   );
   app.enableCors({
-    allowedHeaders: '*',
-    origin: '*',
+    origin: 'http://localhost:3001',
     credentials: true,
   });
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('To-Do app for sobes.kz')
