@@ -20,14 +20,25 @@ export class AuthController {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       })
       .send({ status: 'ok' });
   }
 
   @Post('/registration')
-  registration(@Body() userDto: CreateUserDto) {
-    return this.authService.registration(userDto);
+  async registration(
+    @Res({ passthrough: true }) res: Response,
+    @Body() userDto: CreateUserDto,
+  ) {
+    const { access_token } = await this.authService.registration(userDto);
+    res
+      .cookie('access_token', access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+      })
+      .send({ status: 'ok' });
   }
 
   @Get('logout')

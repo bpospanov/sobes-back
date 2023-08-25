@@ -8,7 +8,10 @@ export type UserDocument = HydratedDocument<User>;
   timestamps: true,
 })
 export class User {
-  @ApiProperty({ example: 'example@my.com', description: 'email пользователя' })
+  @ApiProperty({
+    example: 'example@example.com',
+    description: 'email пользователя',
+  })
   @Prop({ required: true, unique: true })
   email: string;
 
