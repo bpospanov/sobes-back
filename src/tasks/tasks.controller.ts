@@ -44,6 +44,11 @@ export class TasksController {
 
   @ApiOperation({ summary: 'Список задач пользователя' })
   @ApiQuery({ name: 'search', description: 'Поиск', required: false })
+  @ApiQuery({
+    name: 'sortBy',
+    description: 'Сортировка по полю',
+    required: false,
+  })
   @ApiResponse({ status: 200, type: [Task] })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
@@ -51,8 +56,13 @@ export class TasksController {
   async findAll(
     @Req() request: Request,
     @Query('search') search: string,
+    @Query('sortBy') sortBy: string,
   ): Promise<Task[]> {
-    return this.taskService.findAll({ authorId: request.user.id, search });
+    return this.taskService.findAll({
+      authorId: request.user.id,
+      search,
+      sortBy,
+    });
   }
 
   @ApiOperation({ summary: 'Удаление задачи' })

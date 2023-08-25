@@ -18,12 +18,26 @@ export class TasksService {
     return createdTask;
   }
 
-  async findAll({ authorId, search }: { authorId: string; search: string }) {
+  async findAll({
+    authorId,
+    search,
+    sortBy,
+  }: {
+    authorId: string;
+    search: string;
+    sortBy: string;
+  }) {
     const filter: Record<string, any> = { author: authorId };
     if (search) {
       filter.title = { $regex: search, $options: 'i' };
     }
-    const tasks = await this.taskModel.find(filter);
+    const sort: Record<string, any> = {};
+    if (sortBy) {
+      const sortDirection = sortBy.slice(0, 1) === '-' ? -1 : 1;
+      const sortKey = sortBy.replace('-', '');
+      sort[sortKey] = sortDirection;
+    }
+    const tasks = await this.taskModel.find(filter).sort(sort);
     return tasks;
   }
 
