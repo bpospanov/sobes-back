@@ -3,16 +3,19 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   UseGuards,
   Req,
   Param,
   Delete,
   Res,
+  Query,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -20,6 +23,7 @@ import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Task } from './schemas/tasks.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { TaskEntity, UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
 @Controller('api/tasks')
@@ -39,12 +43,16 @@ export class TasksController {
   }
 
   @ApiOperation({ summary: 'Список задач пользователя' })
+  @ApiQuery({ name: 'search', description: 'Поиск', required: false })
   @ApiResponse({ status: 200, type: [Task] })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() request: Request): Promise<Task[]> {
-    return this.taskService.findAll(request.user.id);
+  async findAll(
+    @Req() request: Request,
+    @Query('search') search: string,
+  ): Promise<Task[]> {
+    return this.taskService.findAll({ authorId: request.user.id, search });
   }
 
   @ApiOperation({ summary: 'Удаление задачи' })
@@ -59,5 +67,19 @@ export class TasksController {
   ) {
     await this.taskService.delete(id, request.user.id);
     res.json({});
+  }
+
+  @ApiOperation({ summary: 'Редактирование задачи' })
+  @ApiResponse({ status: 200, type: TaskEntity })
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async updateTask(
+    @Param('id') id: string,
+    @Req() request: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ): Promise<Task> {
+    return this.taskService.update(id, request.user.id, updateTaskDto);
   }
 }
