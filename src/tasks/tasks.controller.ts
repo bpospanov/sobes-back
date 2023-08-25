@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
-import { Request } from 'express';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Req,
+  Param,
+  Delete,
+  Res,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -35,5 +45,19 @@ export class TasksController {
   @Get()
   async findAll(@Req() request: Request): Promise<Task[]> {
     return this.taskService.findAll(request.user.id);
+  }
+
+  @ApiOperation({ summary: 'Удаление задачи' })
+  @ApiResponse({ status: 200 })
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteTask(
+    @Param('id') id: string,
+    @Req() request: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.taskService.delete(id, request.user.id);
+    res.json({});
   }
 }

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from './schemas/tasks.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class TasksService {
@@ -19,5 +20,15 @@ export class TasksService {
   async findAll(authorId: string) {
     const tasks = await this.taskModel.find({ author: authorId });
     return tasks;
+  }
+
+  async delete(taskId: string, userId: string) {
+    const task = await this.taskModel.findOne({ _id: taskId, author: userId });
+    if (String(task.author) !== userId) {
+      throw new ForbiddenException({
+        message: 'Нет доступа',
+      });
+    }
+    await this.taskModel.deleteOne({ _id: taskId });
   }
 }

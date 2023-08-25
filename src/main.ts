@@ -14,7 +14,7 @@ async function start() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: process.env.CLIENT_URL,
     credentials: true,
   });
   app.use(cookieParser());
